@@ -25,7 +25,7 @@ public class Member {
 
     public List<String> getRoleList(){
         if(this.roles.length() > 0) {
-            return Arrays.asList(this.roles);
+            return Arrays.asList(this.roles.split(","));
         }
 
         return new ArrayList<>();

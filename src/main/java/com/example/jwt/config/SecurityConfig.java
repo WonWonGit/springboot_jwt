@@ -3,11 +3,14 @@ package com.example.jwt.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
+import com.example.jwt.config.jwt.JwtAuthenticationFilter;
 import com.example.jwt.domain.Role;
 
 import lombok.RequiredArgsConstructor;
@@ -26,7 +29,7 @@ public class SecurityConfig {
         httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                     .and().addFilter(corsConfig.corsFilter());
         httpSecurity.formLogin().disable();
-        httpSecurity.httpBasic().disable();
+        httpSecurity.httpBasic().disable().apply(new MyCustomDsl());
         httpSecurity.authorizeRequests(authorize -> 
                                        authorize.antMatchers("/h2-console/**").permitAll()
                                        .antMatchers("/api/v1/user/**")
@@ -40,6 +43,15 @@ public class SecurityConfig {
         httpSecurity.csrf().ignoringAntMatchers("/h2-console/**").disable();
 
         return httpSecurity.build();
+    }
+
+    public class MyCustomDsl extends AbstractHttpConfigurer<MyCustomDsl, HttpSecurity>{
+        @Override
+        public void configure(HttpSecurity http) throws Exception {
+            AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
+
+            http.addFilter(new JwtAuthenticationFilter(authenticationManager));
+        }
     }
 
 }
