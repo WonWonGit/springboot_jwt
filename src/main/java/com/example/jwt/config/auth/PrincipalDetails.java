@@ -8,6 +8,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.example.jwt.domain.Member;
 
+import lombok.Data;
+@Data
 public class PrincipalDetails implements UserDetails{
 
     private Member member;
