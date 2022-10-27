@@ -1,6 +1,7 @@
 package com.example.jwt.config.jwt;
 
 import java.io.IOException;
+import java.util.Date;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -13,6 +14,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.example.jwt.config.auth.PrincipalDetails;
 import com.example.jwt.domain.Member;
 import com.example.jwt.domain.MemberDto;
@@ -38,7 +41,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                 authenticationManager.authenticate(authenticationToken);
                                 
         PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();     
-        System.out.println(principalDetails.getMember());
 
         return authentication;
 
@@ -51,8 +53,18 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
             Authentication authResult) throws IOException, ServletException {
-        // TODO Auto-generated method stub
-        super.successfulAuthentication(request, response, chain, authResult);
+                
+        PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
+        
+        // TODO:jwt sign
+        String jwtToken = JWT.create()
+                            .withSubject("token")
+                            .withExpiresAt(new Date(System.currentTimeMillis()+(60000*10)))
+                            .withClaim("id", principalDetails.getMember().getId())
+                            .withClaim("username", principalDetails.getMember().getUsername())
+                            .sign(Algorithm.HMAC512("cos"));
+       
+        response.addHeader("Authorization", "Bearer "+jwtToken);                    
     }
     
 }
