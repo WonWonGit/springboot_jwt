@@ -9,9 +9,13 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.example.jwt.config.jwt.JwtAuthenticationFilter;
+import com.example.jwt.config.jwt.JwtAuthorizationFilter;
+import com.example.jwt.config.jwt.JwtProvider;
 import com.example.jwt.domain.Role;
+import com.example.jwt.repository.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,7 +26,12 @@ public class SecurityConfig {
 
     @Autowired
     private final CorsConfig corsConfig;
-    
+
+    @Autowired
+    private final MemberRepository memberRepository;
+
+    private final JwtProvider jwtProvider;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception{
 
@@ -50,7 +59,8 @@ public class SecurityConfig {
         public void configure(HttpSecurity http) throws Exception {
             AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
 
-            http.addFilter(new JwtAuthenticationFilter(authenticationManager));
+            http.addFilter(new JwtAuthenticationFilter(authenticationManager, jwtProvider))
+                .addFilter(new JwtAuthorizationFilter(authenticationManager, memberRepository, jwtProvider));
         }
     }
 

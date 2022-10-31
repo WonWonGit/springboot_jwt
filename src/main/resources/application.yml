@@ -6,7 +6,6 @@ server:
       charset: UTF-8
       enabled: true
       force: true
-
 spring:
   h2:
     console:
@@ -25,3 +24,8 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: true
+
+  profiles:
+    include:
+    - jwt
+
