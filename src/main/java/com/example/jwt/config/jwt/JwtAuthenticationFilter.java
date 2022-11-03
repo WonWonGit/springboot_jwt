@@ -62,7 +62,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         String jwtToken = jwtProvider.createToken(principalDetails);
        
-        response.addHeader(jwtProvider.HEADER_STRING, jwtProvider.TOKEN_PREFIX+jwtToken);                    
+        response.addHeader(JwtProvider.HEADER_STRING, JwtProvider.TOKEN_PREFIX+jwtToken);                    
     }
     
 }
