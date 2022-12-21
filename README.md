@@ -2,9 +2,9 @@
 
 A practice project to test JWT token login.
 
-## GOAL
-- JWT Token
-- Spring boot Security
+## GOALS
+- To learn JWT token and login system.
+- Understanding Spring security with filters.
 
 
 ## Version
